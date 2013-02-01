@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 using DotNetOpenAuth.AspNet;
 using Microsoft.Web.WebPages.OAuth;
+using MongoDB.Driver.Linq;
 using WebMatrix.WebData;
 using Ninja.WebSite.Filters;
 using Ninja.WebSite.Models;
@@ -223,12 +224,11 @@ namespace Ninja.WebSite.Controllers
             if (ModelState.IsValid) {
                 // Insert a new user into the database
                 using (UsersContext db = new UsersContext()) {
-                    UserProfile user = db.UserProfiles.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
+                    UserProfile user = db.UserProfiles.AsQueryable().FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
                     // Check if user already exists
                     if (user == null) {
                         // Insert name into the profile table
-                        db.UserProfiles.Add(new UserProfile { UserName = model.UserName });
-                        db.SaveChanges();
+                        db.UserProfiles.Insert(new UserProfile { UserName = model.UserName });
 
                         OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);
                         OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false);
