@@ -45,7 +45,7 @@
     </li>
 </ol>
 
-@foreach (var user in (IQueryable<UserProfile>) ViewBag.S)
+@foreach (var user in (IQueryable<UserProfile>) (ViewBag.S))
 {
     <span>@user.UserName</span><br />
 }
